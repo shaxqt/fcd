@@ -1,10 +1,10 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+// tslint:disable-next-line:no-var-requires
 require('dotenv').config();
 
 class ConfigService {
-
-  constructor(private env: { [k: string]: string | undefined }) { }
+  constructor(private env: { [k: string]: string | undefined }) {}
 
   private getValue(key: string, throwOnMissing = true): string {
     const value = this.env[key];
@@ -26,7 +26,7 @@ class ConfigService {
 
   public isProduction() {
     const mode = this.getValue('MODE', false);
-    return mode != 'DEV';
+    return !mode || mode !== 'DEV';
   }
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
@@ -52,16 +52,14 @@ class ConfigService {
       ssl: this.isProduction(),
     };
   }
-
 }
 
-const configService = new ConfigService(process.env)
-  .ensureValues([
-    'POSTGRES_HOST',
-    'POSTGRES_PORT',
-    'POSTGRES_USER',
-    'POSTGRES_PASSWORD',
-    'POSTGRES_DATABASE'
-  ]);
+const configService = new ConfigService(process.env).ensureValues([
+  'POSTGRES_HOST',
+  'POSTGRES_PORT',
+  'POSTGRES_USER',
+  'POSTGRES_PASSWORD',
+  'POSTGRES_DATABASE',
+]);
 
 export { configService };
